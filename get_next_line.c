@@ -6,46 +6,75 @@
 /*   By: yohan <yohan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/11 12:15:08 by yohan             #+#    #+#             */
-/*   Updated: 2024/01/12 07:36:29 by yohan            ###   ########.fr       */
+/*   Updated: 2024/01/16 13:04:19 by yohan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-char *clear_after_NewLine(char *buffer, char newline)
+char *buf_fix(char *buffer, int newline)
 {
-    if (buffer == NULL)
+    int i;
+
+    i = 0;
+    while (buffer[newline])
+    {
+       if (buffer[newline] == '\n')
+       {
+            while (buffer[i])
+            {
+                buffer[i] = buffer[newline];
+                i++;
+                newline++;
+            }
+        newline++;
+       }
+    buffer[i] = '\0';
+    }
+    return (buffer);
+}
+
+char *splitBufferBeforeAndAfterNL(char *buffer, char newline)
+{
+    char *before_Newline;
+
+    before_Newline = ft_calloc(BUFFER_SIZE + 1, 1);
+    if (before_Newline == NULL)
         return (NULL);
+
     int i;
 
     i = 0;
     while (buffer[i] && buffer[i] != newline)
-        i++;
-    if (buffer[i] == newline)
-        i++;
-    
-    buffer[i] = '\0';
-    /* while (buffer[i] && buffer[i] != '\0')
     {
-        buffer[i] = '\0';
+        before_Newline[i] = buffer[i];
         i++;
-    } */
-    return (buffer);
+    }
+    before_Newline[i] = '\0';
+    buf_fix(buffer, i);
+    return (before_Newline);
 }
 
-char *join_Line(char *result, char *addition)
+char *join_Line(char *result, char *buffer)
 {
-    if (!addition)
+    
+    if (!buffer)
         return (result);
-    if (ft_strchr(addition, '\n'))
-        addition = clear_after_NewLine(addition, '\n');
-
-    result = ft_strjoin(result, addition); 
+    if (!ft_strchr(buffer, '\n'))
+        result = ft_strjoin(result, buffer);
+    if (ft_strchr(buffer, '\n'))
+    {
+        char *before_Newline = splitBufferBeforeAndAfterNL(buffer, '\n');
+        result = ft_strjoin(result, before_Newline);
+        free(before_Newline);
+    }
     return (result);
 }
 
-char *read_Until_NewLine(char *result, char *buffer, int fd)
+char *ft_read_line(char *result, char *buffer, int fd)
 {
+    if (read (fd, 0, 0) < 0)
+        return ("NULL");
     int bytes_Read;
     
     bytes_Read = read (fd, buffer, BUFFER_SIZE);
@@ -58,32 +87,25 @@ char *read_Until_NewLine(char *result, char *buffer, int fd)
         if (ft_strchr(buffer, '\n'))
             break;
         bytes_Read = read (fd, buffer, BUFFER_SIZE);
-    }
-    
-    return (result);
-}
-
-char *ft_read_line(char *result, char *buffer, int fd)
-{
-    if (read (fd, 0, 0) < 0)
-        return ("NULL");
-        
-    result = read_Until_NewLine(result, buffer, fd);
-    free (buffer);
+    } 
     return (result);
 }
 
 char *get_next_line(int fd)
 {
+    static char buffer[BUFFER_SIZE + 1];
+
     char *result;
+    
     result = ft_calloc (BUFFER_SIZE + 1, 4);
     if (result == NULL)
         return (NULL);
-    char *buffer;
-    buffer = ft_calloc (BUFFER_SIZE + 1, 4);
-    if (buffer == NULL)
-        return (NULL);
+        
+    if (ft_strlen(buffer) > 0) // check if buffer is not empty
+        result = ft_strjoin(result, buffer);
+        
     result = ft_read_line(result, buffer, fd);
+    
     return (result);
 }
 
@@ -92,24 +114,28 @@ int main (void)
     char *line;
     int fd = open("file2.txt", O_RDONLY);
     line = get_next_line(fd);
-    printf ("|1|%s", line);
+    printf ("|1|%s\n", line);
     free (line);
     
     line = get_next_line(fd);
-    printf ("|2|%s", line);
+    printf ("|2|%s\n", line);
     free(line);
     
     line = get_next_line(fd);
-    printf ("|3|%s", line);
+    printf ("|3|%s\n", line);
     free (line);
     
     line = get_next_line(fd);
-    printf ("|4|%s", line);
+    printf ("|4|%s\n", line);
     free (line);
     
     line = get_next_line(fd);
-    printf ("|5|%s", line);
+    printf ("|5|%s\n", line);
     free (line);
     
+    line = get_next_line(fd);
+    printf ("|6|%s\n", line);
+    free (line);
+
     return (0);
 }

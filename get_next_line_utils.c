@@ -17,35 +17,6 @@
 #include <stdlib.h>
 #include <stddef.h>
 
-void	*ft_memcpy(void *dest, const void *src, size_t n)
-{
-	size_t		i;
-	char		*ptr;
-	const char	*copd;
-
-	i = 0;
-	ptr = (char *)dest;
-	copd = (const char *)src;
-	while (i < n)
-	{
-		ptr[i] = copd[i];
-		i++;
-	}
-	return (dest);
-}
-
-void    ft_strcpy(char *dest, char *src)
-{
-    int i;
-
-    i = 0;
-    while (src[i])
-    {
-        dest[i] = src[i];
-        i++;
-    }
-}
-
 int    ft_strlen(char *str)
 {
     int i;
@@ -56,32 +27,32 @@ int    ft_strlen(char *str)
     return (i);
 }
 
-size_t	ft_strlcat(char *dest, const char *src, size_t sizeofbuf)
-{
-	size_t	i;
-	int		j;
-	int		k;
+	size_t	ft_strlcat(char *dest, const char *src, size_t sizeofbuf)
+	{
+		size_t	i;
+		int		j;
+		int		k;
 
-	i = 0;
-	j = 0;
-	k = 0;
-	while (dest[i])
-		i++;
+		i = 0;
+		j = 0;
+		k = 0;
+		while (dest[i])
+			i++;
 	while (src[j])
-		j++;
+	j++;
 	if (sizeofbuf <= i)
-		j += sizeofbuf;
+	j += sizeofbuf;
 	else
-		j += i;
+	j += i;
 	while (src[k] && i + 1 < sizeofbuf)
 	{
-		dest[i] = src[k];
-		i++;
-		k++;
+	dest[i] = src[k];
+	i++;
+	k++;
 	}
 	dest[i] = '\0';
 	return (j);
-}
+	}
 
 size_t	ft_strlcpy(char *dest, const char *src, size_t i)
 {
@@ -123,24 +94,6 @@ char	*ft_strjoin(char const *s1, char const *s2)
 	return (full);
 }
 
-char *ft_strncpy(char *dest, char *src, unsigned int n)
-{
-    unsigned int i;
-
-    i = 0;
-    while(src[i] && i < n)
-    {
-        dest[i] = src[i];
-        i++;
-    }
-    while(i < n)
-    {
-        dest[i] = '\0';
-        i++;
-    }
-    return (0);
-}
-
 char	*ft_strchr(const char *s, int c)
 {
     int	i;
@@ -153,27 +106,27 @@ char	*ft_strchr(const char *s, int c)
     return (0);
 } 
 
-void	ft_bzero(void *str, size_t nb)
+char	*ft_substr(char *s, int start, int len)
 {
-	size_t			i;
-	unsigned char	*ptr;
+	int	j;
+	char	*str;
 
-	i = 0;
-	ptr = (unsigned char *)str;
-	while (ptr[i] && i < nb)
+	if (start >= ft_strlen(s))
 	{
-		ptr[i] = 0;
-		i++;
+		str = (char *)malloc(sizeof(char));
+		*str = 0;
+		return (str);
 	}
-}
-
-void	*ft_calloc(size_t nitems, size_t size)
-{
-	void	*dest;
-
-	dest = (void *)malloc(nitems * size);
-	if (!dest)
+	if (len >= ft_strlen(s))
+		len = ft_strlen(s) - start;
+	str = (char *)malloc(sizeof(char) * (len + 1));
+	if (str == NULL)
 		return (NULL);
-	ft_bzero(dest, (nitems * size));
-	return (dest);
+	j = 0;
+	while (start < ft_strlen(s) && j < len)
+	{
+		str[j++] = s[start++];
+	}
+	str[j] = '\0';
+	return (str);
 }
